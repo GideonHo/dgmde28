@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<style type="text/css">
+
+    .board {
+                display: grid;
+                grid-template-columns: repeat(3, 100px);
+                grid-template-rows: repeat(3, 100px);
+                gap: 5px;
+    }
+
+    .square {
+        width: 100px; 
+        height: 100px;
+        border: 1px solid #770206;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .square:hover {
+        background-color: aquamarine;
+    }
+
+    #turnIndicator {
+        width: 300px;
+        height: 100px;
+        border: 1px solid #123456;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    #winCondition {
+        width: 300px;
+        height: 100px;
+        border: 1px solid #654321;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+</style>
+
+
+</head>
+
+<body>
+    <h1>
+        <script>
+            document.write('Assignment 2: Tic Tac Toe Part 1 - ttt2.html') 
+        </script>
+    </h1>
+    <div id="turnIndicator">X's Turn</div>
+    <div class="board">
+    <script>
+        const NUM_SQUARES = 9;
+        for (i=0; i<NUM_SQUARES; i++)
+        {
+            id = "sq"+i;
+            document.write( "<div class='square' id='" + id + "'></div>" );
+        }
+
+    </script>
+    <div id="winCondition"> Win Condition: No winner yet</div>
+    </div>
+</body>
+
+</html>
