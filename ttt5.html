@@ -1,0 +1,137 @@
+<html>
+    
+<head>
+    <style type="text/css">
+
+        .board {
+                    display: grid;
+                    grid-template-columns: repeat(3, 100px);
+                    grid-template-rows: repeat(3, 100px);
+                    gap: 5px;
+        }
+
+        .square {
+            width: 100px; 
+            height: 100px;
+            border: 1px solid #770206;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .square:hover {
+            background-color: aquamarine;
+        }
+
+        #turnIndicator {
+            width: 300px;
+            height: 100px;
+            border: 1px solid #123456;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #winCondition {
+            width: 300px;
+            height: 100px;
+            border: 1px solid #654321;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Assignment 2c: Tic Tac Toe Part 3</h1>
+    <div id="turnIndicator"></div>
+    <div class="board"></div>
+    <div id="winCondition">Win Condition: No winner yet</div>
+    <button onclick="startGame()">Start Game</button>
+
+    <script>
+        const NUM_SQUARES = 9;
+        let currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
+        let gameEnded = false;
+
+        document.getElementById('turnIndicator').innerText = currentPlayer + "'s Turn";
+        document.querySelector('.board').innerHTML = generateBoard();
+
+        function generateBoard() {
+            let boardHTML = '';
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                let id = "sq" + i;
+                boardHTML += `<div class='square' id='${id}' onClick='handleSquareClick(this)'></div>`;
+            }
+            return boardHTML;
+        }
+
+        function startGame() {
+            document.getElementById('winCondition').innerText = "Win Condition: No winner yet";
+            gameEnded = false;
+            togglePlayer();
+            document.getElementById('turnIndicator').innerText = currentPlayer + "'s Turn";
+            document.querySelectorAll('.square').forEach(square => {
+                square.innerText = '';
+            });
+        }
+
+        function handleSquareClick(square) {
+            if (gameEnded || square.innerText !== '') return;
+            square.innerText = currentPlayer;
+            updateTurnIndicator();
+            let moves = Array.from(document.querySelectorAll('.square')).map(square => square.innerText || '-');
+            let winConditions = getWinConditions(moves);
+            checkWinCondition(winConditions);
+            if (!gameEnded && moves.every(move => move !== '-')) {
+                document.getElementById('winCondition').innerText = "Stalemate! No winner.";
+                gameEnded = true;
+            }
+        }
+
+        function togglePlayer() {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+
+        function updateTurnIndicator() {
+            togglePlayer();
+            document.getElementById('turnIndicator').innerText = currentPlayer + "'s Turn";
+        }
+
+
+        function getWinConditions(moves) {
+            const winConditions = [];
+            // Check all three rows
+            winConditions.push(moves.slice(0, 3).join(''));
+            winConditions.push(moves.slice(3, 6).join(''));
+            winConditions.push(moves.slice(6, 9).join(''));
+            // Check all three columns
+            winConditions.push(moves[0] + moves[3] + moves[6]);
+            winConditions.push(moves[1] + moves[4] + moves[7]);
+            winConditions.push(moves[2] + moves[5] + moves[8]);
+            // Check the two diagonals
+            winConditions.push(moves[0] + moves[4] + moves[8]);
+            winConditions.push(moves[2] + moves[4] + moves[6]);
+            return winConditions;
+        }
+
+        function checkWinCondition(winConditions) {
+            for (let condition of winConditions) {
+                if (condition === 'XXX') {
+                    document.getElementById('winCondition').innerText = "X wins!";
+                    gameEnded = true;
+                    break;
+                } else if (condition === 'OOO') {
+                    document.getElementById('winCondition').innerText = "O wins!";
+                    gameEnded = true;
+                    break;
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>
