@@ -86,7 +86,7 @@
             let winConditions = getWinConditions(moves);
             checkWinCondition(winConditions);
             if (!gameEnded && moves.every(move => move !== '-')) {
-                document.getElementById('winCondition').innerText = "Stalemate! No winner.";
+                document.getElementById('winCondition').innerText = "No winner. Press Start Game.";
                 gameEnded = true;
             }
         }
