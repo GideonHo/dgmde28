@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Joe's Hotdogs</title>
+    <script>
+        // Part 1: Representation of items and prices
+
+        // 1. Using an associative array
+        const itemsAndPrices = {
+            hotdogs: 4,
+            fries: 3.50,
+            soda: 1.50,
+            sauerkraut: 1
+        };
+
+        // 2. Using a JSON object
+        const menuJSON = {
+            "items": [
+                { "name": "hotdogs", "price": 4 },
+                { "name": "fries", "price": 3.50 },
+                { "name": "soda", "price": 1.50 },
+                { "name": "sauerkraut", "price": 1 }
+            ]
+        };
+
+        // 3. Using a function object
+        function MenuItem(name, price) {
+            this.name = name;
+            this.price = price;
+        }
+
+        const menuItems = [
+            new MenuItem("hotdogs", 4),
+            new MenuItem("fries", 3.50),
+            new MenuItem("soda", 1.50),
+            new MenuItem("sauerkraut", 1)
+        ];
+
+        // Part 2: Display menu
+
+        // Display menu using JSON object
+        function displayMenuJSON() {
+            const menuDiv = document.getElementById("menuJSON");
+            menuDiv.innerHTML = "";
+
+            for (let i = 0; i < menuJSON.items.length; i++) {
+                const menuItem = menuJSON.items[i];
+                const itemDiv = document.createElement("div");
+                itemDiv.textContent = `${menuItem.name}: $${menuItem.price}`;
+                menuDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Display menu using array of objects
+        function displayMenuArray() {
+            const menuDiv = document.getElementById("menuArray");
+            menuDiv.innerHTML = "";
+
+            for (let i = 0; i < menuItems.length; i++) {
+                const menuItem = menuItems[i];
+                const itemDiv = document.createElement("div");
+                itemDiv.textContent = `${menuItem.name}: $${menuItem.price}`;
+                menuDiv.appendChild(itemDiv);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Joe's Hotdogs Menu</h1>
+
+    <h2>Menu using JSON object:</h2>
+    <div id="menuJSON"></div>
+    <button onclick="displayMenuJSON()">Show Menu (JSON)</button>
+
+    <h2>Menu using array of objects:</h2>
+    <div id="menuArray"></div>
+    <button onclick="displayMenuArray()">Show Menu (Array)</button>
+</body>
+</html>
