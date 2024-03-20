@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .feedback-tile {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border: 1px solid #000;
+        }
+        .green {
+            background-color: green;
+        }
+        .yellow {
+            background-color: yellow;
+        }
+        @keyframes winAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .win-animation {
+            animation: winAnimation 0.5s ease-in-out;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 700px) {
+            #game-container {
+                padding: 10px;
+            }
+            #guess-input {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            input[type="text"],
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Wordle Game</h1>
+    <p>Guess the 5-letter word! You have <span id="guesses-left">6</span> guesses left.</p>
+    <div id="game-container">
+        <div id="word-display"></div>
+        <div id="guess-input">
+            <input type="text" id="guess" maxlength="5">
+            <button id="submit">Submit Guess</button>
+            <button id="new-game">New Game</button>
+            <button id="debug">Debug</button>
+        </div>
+        <div id="feedback-history"></div>
+        <div id="target-word" style="display: none;"></div>
+        <div id="game-stats">Wins: <span id="wins">0</span>, Losses: <span id="losses">0</span></div>
+    </div>
+
+    <script>
+        let targetWord = '';
+        let numTries = 6;
+        let wins = 0;
+        let losses = 0;
+
+        function fetchRandomWord() {
+            return fetch('https://random-word-api.herokuapp.com/word?number=1&length=5')
+                .then(response => response.json())
+                .then(data => data[0]); 
+        }
+
+        function initializeGame() {
+            fetchRandomWord()
+                .then(word => {
+                    targetWord = word.toUpperCase();
+                    console.log('Target Word:', targetWord);
+                    document.getElementById('word-display').textContent = 'Word: ' + '_'.repeat(5);
+                    document.getElementById('target-word').textContent = `Target Word: ${targetWord}`;
+                })
+                .catch(error => console.error('Error fetching random word:', error));
+
+            numTries = 6;
+            document.getElementById('guesses-left').textContent = numTries;
+            document.getElementById('guess').disabled = false;
+            document.getElementById('submit').disabled = false;
+            document.getElementById('guess').value = '';
+            document.getElementById('feedback-history').innerHTML = '';
+            document.getElementById('target-word').style.display = 'none';
+            document.getElementById('debug').addEventListener('click', toggleDebug);
+        }
+
+        function toggleDebug() {
+            const targetWordDisplay = document.getElementById('target-word');
+            targetWordDisplay.style.display = targetWordDisplay.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function checkGuess() {
+            const guess = document.getElementById('guess').value.toUpperCase();
+            if (guess.length !== 5 || !/^[A-Za-z]+$/.test(guess)) {
+                alert('Please enter a valid 5-letter word.');
+                return;
+            }
+
+            numTries--;
+            document.getElementById('guesses-left').textContent = numTries;
+            if (guess === targetWord) {
+                document.getElementById('feedback-history').innerHTML = '<p class="win-animation">Congratulations! You guessed the word!</p>' + document.getElementById('feedback-history').innerHTML;
+                document.getElementById('guess').disabled = true;
+                document.getElementById('submit').disabled = true;
+                wins++;
+                updateStats();
+                return;
+            }
+
+            if (numTries === 0) {
+                document.getElementById('feedback-history').innerHTML = `<p>You've run out of tries. The word was "${targetWord}".</p>` + document.getElementById('feedback-history').innerHTML;
+                document.getElementById('guess').disabled = true;
+                document.getElementById('submit').disabled = true;
+                losses++;
+                updateStats();
+                return;
+            }
+
+            let feedback = '';
+            let usedLetters = ''; 
+
+            for (let i = 0; i < 5; i++) {
+                const letter = guess[i];
+                if (targetWord[i] === letter) {
+                    feedback += `<div class="feedback-tile green">${letter}</div>`;
+                } else if (targetWord.includes(letter) && !usedLetters.includes(letter)) {
+                    feedback += `<div class="feedback-tile yellow">${letter}</div>`;
+                } else {
+                    feedback += `<div class="feedback-tile">${letter}</div>`;
+                }
+                usedLetters += letter;
+            }
+
+            for (const char of usedLetters) {
+                if (!guess.includes(char)) {
+                    feedback += `<div class="feedback-tile">${char}</div>`;
+                }
+            }
+
+            document.getElementById('feedback-history').innerHTML = '<p>Feedback: </p>' + feedback + document.getElementById('feedback-history').innerHTML;
+        }
+
+        function updateStats() {
+            document.getElementById('wins').textContent = wins;
+            document.getElementById('losses').textContent = losses;
+        }
+
+        document.getElementById('submit').addEventListener('click', checkGuess);
+        document.getElementById('new-game').addEventListener('click', initializeGame);
+        initializeGame();
+    </script>
+</body>
+</html>
