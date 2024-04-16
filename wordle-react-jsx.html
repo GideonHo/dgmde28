@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wordle Board</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <style type="text/css">
+        .green { background-color: green; }
+        .yellow { background-color: yellow; }
+        .gray { background-color: gray; }
+        .square {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 28px;
+            color: black;
+            line-height: 58px;
+            border: 1px solid #000;
+        }
+        #board {width: 260px;}
+        #keyboard {width: 560px;}
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+
+    function Guess(guess) {
+        this.letters = guess.split('');
+    }
+
+    function checkGuess(guess) {
+        const word = "MOODY";
+        let result = [];
+
+        for (let i = 0; i < guess.letters.length; i++) {
+            if (guess.letters[i] === word[i]) {
+                result.push("green");
+            } else if (word.includes(guess.letters[i])) {
+                result.push("yellow");
+            } else {
+                result.push("gray");
+            }
+        }
+
+        return result;
+    }
+
+    const guesses = [
+        new Guess("MIGHT"),
+        new Guess("FLOOD"),
+        new Guess("STRAY")
+    ];
+
+    const board = (
+        <div id="board">
+            {guesses.map((guess, index) => (
+                <div key={index}>
+                    {guess.letters.map((letter, i) => (
+                        <div key={i} className={"square " + checkGuess(guess)[i]}>{letter}</div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+
+    const keys = [
+        new Guess("QWERTYUIOP"),
+        new Guess("ASDFGHJKL_"),
+        new Guess("ZXCVBNM___")
+    ];
+
+    const keyboard = (
+        <div id="keyboard">
+            {keys.map((row, index) => (
+                <div key={index}>
+                    {row.letters.map((letter, i) => (
+                        <div key={i} className="square">{letter}</div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+
+    ReactDOM.render([board, keyboard], document.getElementById('app'));
+
+    </script>
+</body>
+</html>
